@@ -68,15 +68,9 @@ export async function processImage(
     outputImage = outputImage.linear(contrastMultiplier, -(128 * (contrastMultiplier - 1)));
   }
 
-  // Preserve color profile if present
-  if (metadata.icc) {
-    outputImage = outputImage.withMetadata({
-      icc: metadata.icc
-    });
-  } else {
-    // Keep EXIF even without ICC profile
-    outputImage = outputImage.withMetadata();
-  }
+  // Preserve EXIF and color profile metadata
+  // withMetadata() automatically preserves ICC profile from the original image
+  outputImage = outputImage.withMetadata();
 
   // Determine output format from input or default to original
   const format = metadata.format || 'jpeg';

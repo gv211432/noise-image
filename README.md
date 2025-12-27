@@ -33,23 +33,23 @@ This tool replicates these behaviors:
 
 ```
 ┌─────────────────────────────────────────────┐
-│ 1. Generate Base Noise Map                 │
+│ 1. Generate Base Noise Map                  │
 │    - Gaussian distribution                  │
 │    - Spatial variance (non-uniform)         │
 │    - Seeded random for reproducibility      │
 └─────────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────────┐
-│ 2. Generate Per-Channel Noise              │
+│ 2. Generate Per-Channel Noise               │
 │    - R: 1.0× multiplier                     │
-│    - G: 0.85× (cleanest, most sensor area) │
-│    - B: 1.25× (noisiest, quantum effect)   │
+│    - G: 0.85× (cleanest, most sensor area)  │
+│    - B: 1.25× (noisiest, quantum effect)    │
 └─────────────────────────────────────────────┘
                     ↓
 ┌─────────────────────────────────────────────┐
-│ 3. Apply Luminance Scaling                 │
-│    - Dark areas: 2× noise (shot noise)     │
-│    - Bright areas: 1× noise                │
+│ 3. Apply Luminance Scaling                  │
+│    - Dark areas: 2× noise (shot noise)      │
+│    - Bright areas: 1× noise                 │
 │    - Smooth power curve transition          │
 └─────────────────────────────────────────────┘
                     ↓

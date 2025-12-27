@@ -32,3 +32,5 @@ output/
 # Temporary files
 *.tmp
 temp/
+input
+output

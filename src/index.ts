@@ -17,7 +17,7 @@
  *   --help              Show help
  */
 
-import { join } from 'path';
+import { basename, join } from 'path';
 import { processImageBatch } from './image-processor.js';
 import { getImageFiles, ensureDirectory, getOutputPath, formatTime } from './file-utils.js';
 import { createConfig, getPreset, validateConfig, presets } from './config.js';
