@@ -1,0 +1,54 @@
+{
+  "presets": {
+    "subtle": {
+      "name": "Subtle",
+      "description": "Very subtle noise - ideal for high-end cameras in good lighting. Barely perceptible but breaks up AI smoothness",
+      "settings": {
+        "intensity": 0.004,
+        "variance": 0.15,
+        "luminanceDependent": true,
+        "microContrast": 0.15
+      }
+    },
+    "normal": {
+      "name": "Normal",
+      "description": "Normal noise - typical DSLR/mirrorless at ISO 400-800. Visible on close inspection but natural-looking",
+      "settings": {
+        "intensity": 0.008,
+        "variance": 0.25,
+        "luminanceDependent": true,
+        "microContrast": 0.2
+      }
+    },
+    "moderate": {
+      "name": "Moderate",
+      "description": "Moderate noise - higher ISO (1600-3200) or lower-end sensor. Clearly visible but still pleasing and organic",
+      "settings": {
+        "intensity": 0.015,
+        "variance": 0.35,
+        "luminanceDependent": true,
+        "microContrast": 0.25
+      }
+    },
+    "flat": {
+      "name": "Flat",
+      "description": "Flat/uniform - minimal variance, even distribution. For when you want consistent noise across image",
+      "settings": {
+        "intensity": 0.006,
+        "variance": 0.05,
+        "luminanceDependent": false,
+        "microContrast": 0.1
+      }
+    },
+    "real": {
+      "name": "Real",
+      "description": "Realistic camera noise with custom balanced settings",
+      "settings": {
+        "intensity": 0.028,
+        "variance": 0.023,
+        "luminanceDependent": false,
+        "microContrast": 0.014
+      }
+    }
+  }
+}

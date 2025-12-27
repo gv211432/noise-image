@@ -2,56 +2,88 @@
  * Default configuration presets for realistic camera noise
  */
 
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import type { NoiseConfig } from './types.js';
+
+/**
+ * Preset data structure from JSON
+ */
+interface PresetData {
+  name: string;
+  description: string;
+  settings: NoiseConfig;
+}
+
+interface PresetsFile {
+  presets: Record<string, PresetData>;
+}
+
+/**
+ * Load presets from preset.json file
+ */
+function loadPresets(): Record<string, NoiseConfig> {
+  try {
+    const presetPath = join(process.cwd(), 'preset.json');
+    const fileContent = readFileSync(presetPath, 'utf-8');
+    const data: PresetsFile = JSON.parse(fileContent);
+
+    // Convert preset data to NoiseConfig objects
+    const loadedPresets: Record<string, NoiseConfig> = {};
+    for (const [key, preset] of Object.entries(data.presets)) {
+      loadedPresets[key] = preset.settings;
+    }
+
+    return loadedPresets;
+  } catch (error) {
+    console.error('Warning: Could not load preset.json, using default presets');
+    // Fallback to hardcoded presets
+    return {
+      subtle: {
+        intensity: 0.004,
+        variance: 0.15,
+        luminanceDependent: true,
+        microContrast: 0.15
+      } as NoiseConfig,
+      normal: {
+        intensity: 0.008,
+        variance: 0.25,
+        luminanceDependent: true,
+        microContrast: 0.2
+      } as NoiseConfig,
+      moderate: {
+        intensity: 0.015,
+        variance: 0.35,
+        luminanceDependent: true,
+        microContrast: 0.25
+      } as NoiseConfig,
+      flat: {
+        intensity: 0.006,
+        variance: 0.05,
+        luminanceDependent: false,
+        microContrast: 0.1
+      } as NoiseConfig
+    };
+  }
+}
+
+/**
+ * Load preset metadata for display
+ */
+export function loadPresetMetadata(): PresetsFile {
+  try {
+    const presetPath = join(process.cwd(), 'preset.json');
+    const fileContent = readFileSync(presetPath, 'utf-8');
+    return JSON.parse(fileContent);
+  } catch (error) {
+    throw new Error('Could not load preset.json');
+  }
+}
 
 /**
  * Preset configurations mimicking different camera scenarios
  */
-export const presets = {
-  /**
-   * Very subtle noise - ideal for high-end cameras in good lighting
-   * Barely perceptible but breaks up AI smoothness
-   */
-  subtle: {
-    intensity: 0.004,
-    variance: 0.15,
-    luminanceDependent: true,
-    microContrast: 0.15
-  } as NoiseConfig,
-
-  /**
-   * Normal noise - typical DSLR/mirrorless at ISO 400-800
-   * Visible on close inspection but natural-looking
-   */
-  normal: {
-    intensity: 0.008,
-    variance: 0.25,
-    luminanceDependent: true,
-    microContrast: 0.2
-  } as NoiseConfig,
-
-  /**
-   * Moderate noise - higher ISO (1600-3200) or lower-end sensor
-   * Clearly visible but still pleasing and organic
-   */
-  moderate: {
-    intensity: 0.015,
-    variance: 0.35,
-    luminanceDependent: true,
-    microContrast: 0.25
-  } as NoiseConfig,
-
-  /**
-   * Flat/uniform - minimal variance, even distribution
-   * For when you want consistent noise across image
-   */
-  flat: {
-    intensity: 0.006,
-    variance: 0.05,
-    luminanceDependent: false,
-    microContrast: 0.1
-  } as NoiseConfig
-} as const;
+export const presets = loadPresets();
 
 /**
  * Default configuration - balanced for most use cases

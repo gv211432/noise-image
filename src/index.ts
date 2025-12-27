@@ -20,7 +20,7 @@
 import { basename, join } from 'path';
 import { processImageBatch } from './image-processor.js';
 import { getImageFiles, ensureDirectory, getOutputPath, formatTime } from './file-utils.js';
-import { createConfig, getPreset, validateConfig, presets } from './config.js';
+import { createConfig, getPreset, validateConfig, presets, loadPresetMetadata } from './config.js';
 import type { NoiseConfig } from './types.js';
 
 /**
@@ -31,12 +31,14 @@ function parseArgs(): {
   inputDir: string;
   outputDir: string;
   showHelp: boolean;
+  showPresetList: boolean;
 } {
   const args = process.argv.slice(2);
   const config: Partial<NoiseConfig> = {};
   let inputDir = './input';
   let outputDir = './output';
   let showHelp = false;
+  let showPresetList = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -45,6 +47,10 @@ function parseArgs(): {
       case '--help':
       case '-h':
         showHelp = true;
+        break;
+
+      case '--preset-list':
+        showPresetList = true;
         break;
 
       case '--preset':
@@ -99,7 +105,40 @@ function parseArgs(): {
     }
   }
 
-  return { config, inputDir, outputDir, showHelp };
+  return { config, inputDir, outputDir, showHelp, showPresetList };
+}
+
+/**
+ * Show preset list with all available presets and their settings
+ */
+function showPresetListMessage(): void {
+  try {
+    const metadata = loadPresetMetadata();
+
+    console.log(`
+Realistic Camera Noise Processor - Available Presets
+=====================================================
+`);
+
+    for (const [key, preset] of Object.entries(metadata.presets)) {
+      console.log(`${preset.name} (${key})`);
+      console.log(`  ${preset.description}`);
+      console.log(`  Settings:`);
+      console.log(`    Intensity:       ${preset.settings.intensity.toFixed(4)}`);
+      console.log(`    Variance:        ${preset.settings.variance.toFixed(4)}`);
+      console.log(`    Micro-contrast:  ${preset.settings.microContrast.toFixed(4)}`);
+      console.log(`    Luminance-dependent: ${preset.settings.luminanceDependent ? 'Yes' : 'No'}`);
+      console.log('');
+    }
+
+    console.log('Usage:');
+    console.log('  bun run src/index.ts --preset <name>');
+    console.log('\nExample:');
+    console.log('  bun run src/index.ts --preset real');
+  } catch (error) {
+    console.error(`❌ Failed to load presets: ${(error as Error).message}`);
+    process.exit(1);
+  }
 }
 
 /**
@@ -117,8 +156,10 @@ Usage:
 
 Options:
   --preset, -p <name>       Use a preset configuration
-                            Options: subtle, normal, moderate, flat
+                            Options: subtle, normal, moderate, flat, real
                             Default: normal
+
+  --preset-list             List all available presets with detailed settings
 
   --intensity, -i <n>       Noise intensity (0.0 - 1.0)
                             Higher = more visible noise
@@ -151,8 +192,12 @@ Presets:
   normal     - Typical DSLR at ISO 400-800 (recommended)
   moderate   - Higher ISO or consumer camera
   flat       - Uniform noise, minimal variation
+  real       - Realistic camera noise with custom balanced settings
 
 Examples:
+  # List all available presets with settings
+  bun run src/index.ts --preset-list
+
   # Process with default (normal) settings
   bun run src/index.ts
 
@@ -174,10 +219,15 @@ Examples:
  * Main execution
  */
 async function main(): Promise<void> {
-  const { config: configOverrides, inputDir, outputDir, showHelp } = parseArgs();
+  const { config: configOverrides, inputDir, outputDir, showHelp, showPresetList } = parseArgs();
 
   if (showHelp) {
     showHelpMessage();
+    process.exit(0);
+  }
+
+  if (showPresetList) {
+    showPresetListMessage();
     process.exit(0);
   }
 
