@@ -139,4 +139,8 @@ export function validateConfig(config: NoiseConfig): void {
   if (config.seed !== undefined && (config.seed < 0 || !Number.isInteger(config.seed))) {
     throw new Error('seed must be a positive integer or undefined');
   }
+
+  if (config.smoothing !== undefined && (config.smoothing < 0 || config.smoothing > 1)) {
+    throw new Error('smoothing must be between 0 and 1');
+  }
 }

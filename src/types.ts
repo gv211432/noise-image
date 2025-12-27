@@ -34,6 +34,13 @@ export interface NoiseConfig {
    * If undefined, uses current timestamp for true randomness
    */
   seed?: number;
+
+  /**
+   * Smoothing strength applied after all filters (0.0 - 1.0)
+   * Optional post-processing blur to soften the final image
+   * 0.0 = no smoothing, 1.0 = maximum smoothing
+   */
+  smoothing?: number;
 }
 
 /**

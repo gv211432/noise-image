@@ -68,6 +68,16 @@ export async function processImage(
     outputImage = outputImage.linear(contrastMultiplier, -(128 * (contrastMultiplier - 1)));
   }
 
+  // Apply smoothing if enabled
+  // This is applied after all other filters as a final post-processing step
+  if (config.smoothing !== undefined && config.smoothing > 0) {
+    // Convert smoothing value (0-1) to sigma for Gaussian blur
+    // Higher smoothing values produce stronger blur
+    // Sigma range: 0.5 (subtle) to 5.0 (strong)
+    const sigma = 0.5 + (config.smoothing * 4.5);
+    outputImage = outputImage.blur(sigma);
+  }
+
   // Preserve EXIF and color profile metadata
   // withMetadata() automatically preserves ICC profile from the original image
   outputImage = outputImage.withMetadata();

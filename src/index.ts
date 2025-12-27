@@ -12,6 +12,7 @@
  *   --variance <n>      Noise variance (0.0 - 1.0)
  *   --micro-contrast <n> Micro-contrast strength (0.0 - 1.0)
  *   --seed <n>          Random seed for reproducibility
+ *   --smoothing <n>     Smoothing strength (0.0 - 1.0)
  *   --input <dir>       Input directory (default: ./input)
  *   --output <dir>      Output directory (default: ./output)
  *   --help              Show help
@@ -85,6 +86,10 @@ function parseArgs(): {
         config.seed = parseInt(args[++i], 10);
         break;
 
+      case '--smoothing':
+        config.smoothing = parseFloat(args[++i]);
+        break;
+
       case '--no-luminance':
         config.luminanceDependent = false;
         break;
@@ -128,6 +133,7 @@ Realistic Camera Noise Processor - Available Presets
       console.log(`    Variance:        ${preset.settings.variance.toFixed(4)}`);
       console.log(`    Micro-contrast:  ${preset.settings.microContrast.toFixed(4)}`);
       console.log(`    Luminance-dependent: ${preset.settings.luminanceDependent ? 'Yes' : 'No'}`);
+      console.log(`    Smoothing:       ${preset.settings.smoothing !== undefined ? preset.settings.smoothing.toFixed(4) : '0.0000'}`);
       console.log('');
     }
 
@@ -175,6 +181,11 @@ Options:
 
   --seed, -s <number>       Random seed for reproducibility
                             Default: random (uses timestamp)
+
+  --smoothing <n>           Smoothing strength after all filters (0.0 - 1.0)
+                            Applied as post-processing blur
+                            0.0 = no smoothing, 1.0 = maximum smoothing
+                            Default: 0.0 (no smoothing)
 
   --no-luminance            Disable luminance-dependent noise
                             (uniform noise across all brightness levels)
@@ -249,7 +260,8 @@ async function main(): Promise<void> {
   console.log(`  Variance:        ${config.variance.toFixed(2)}`);
   console.log(`  Micro-contrast:  ${config.microContrast.toFixed(2)}`);
   console.log(`  Luminance-dependent: ${config.luminanceDependent ? 'Yes' : 'No'}`);
-  console.log(`  Seed:            ${config.seed ?? 'Random'}\n`);
+  console.log(`  Seed:            ${config.seed ?? 'Random'}`);
+  console.log(`  Smoothing:       ${config.smoothing !== undefined ? config.smoothing.toFixed(2) : '0.00'}\n`);
 
   // Ensure output directory exists
   try {
